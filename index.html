@@ -735,6 +735,7 @@
       white-space: nowrap;
       will-change: transform;
       z-index: 2;
+      display: block;
     }
     .gravity-item.accent { color: var(--accent); border-color: rgba(200,245,66,0.3); background: var(--accent-dim); }
     .gravity-dot {
@@ -745,8 +746,9 @@
       opacity: 0.35;
       will-change: transform;
       z-index: 2;
+      display: block;
     }
-    #hero { overflow: hidden; }
+    #hero { overflow: hidden; position: relative; }
 
 
     @media (max-width: 900px) {
@@ -1451,6 +1453,7 @@
   </script>
   <script>
     // ── ANTIGRAVITY PHYSICS (hero only) ──────────────────────────────
+    window.addEventListener('load', () => {
     const heroEl = document.getElementById('hero');
     const gravIds = ['g1','g2','g3','g4','g5','g6','g7','g8','d1','d2','d3','d4'];
     const gravEls = gravIds.map(id => document.getElementById(id)).filter(Boolean);
@@ -1528,4 +1531,14 @@
         if (s.x < margin)      { s.x = margin;      s.vx *= -0.5; }
         if (s.x > hw - margin) { s.x = hw - margin; s.vx *= -0.5; }
         if (s.y < margin)      { s.y = margin;       s.vy *= -0.5; }
-   
+           if (s.y > hh - margin) { s.y = hh - margin;  s.vy *= -0.5; }
+
+        s.el.style.transform = `translate(${s.x - s.ox - s.w/2}px, ${s.y - s.oy - s.h/2}px)`;
+      });
+
+      requestAnimationFrame(gravTick);
+    }
+    gravTick();
+    }); // end window.load
+  </script>
+</html>
