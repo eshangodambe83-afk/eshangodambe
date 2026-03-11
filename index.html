@@ -748,18 +748,119 @@
     }
     #hero { overflow: hidden; }
 
+
     @media (max-width: 900px) {
-      nav { padding: 1.25rem 1.5rem; }
-      #hero, section, #contact, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
-      #about .about-grid,
-      .contact-inner,
-      .hero-cta { grid-template-columns: 1fr; flex-direction: column; }
-      #projects .projects-grid,
-      #skills .skills-container { grid-template-columns: 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      .hero-number { display: none; }
-      .hero-scroll { left: 1.5rem; }
+      /* hide custom cursor on touch */
+      .cursor-wrap, .cursor-ghost, .cursor-label, .spotlight { display: none !important; }
+      body { cursor: auto; }
+
+      /* gravity items hidden on mobile — too cluttered */
+      .gravity-item, .gravity-dot { display: none; }
+
+      /* NAV — mobile hamburger */
+      nav { padding: 1.1rem 1.25rem; }
       .nav-links { display: none; }
+      .nav-hamburger {
+        display: flex !important;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        padding: 4px;
+      }
+      .nav-hamburger span {
+        display: block;
+        width: 22px;
+        height: 1.5px;
+        background: var(--text);
+        transition: all 0.3s ease;
+      }
+      .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+      .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+      .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+      /* Mobile menu overlay */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10,10,10,0.98);
+        z-index: 99;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5rem;
+      }
+      .mobile-menu.open { display: flex; }
+      .mobile-menu a {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text);
+        text-decoration: none;
+        letter-spacing: -0.03em;
+        transition: color 0.2s;
+      }
+      .mobile-menu a:hover { color: var(--accent); }
+      .mobile-menu-num {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        margin-right: 0.75rem;
+      }
+
+      /* HERO */
+      #hero {
+        padding: 7rem 1.25rem 4rem;
+        min-height: 100svh;
+      }
+      .hero-name-row { flex-wrap: wrap; }
+      .hero-char { font-size: clamp(3rem, 16vw, 5rem); }
+      .hero-name-tag { font-size: 0.6rem; top: -0.3rem; }
+      .hero-desc { font-size: 0.82rem; }
+      .hero-cta { flex-direction: column; gap: 0.75rem; }
+      .btn-primary, .btn-ghost { width: 100%; justify-content: center; padding: 1rem 1.5rem; font-size: 0.9rem; }
+      .hero-scroll { left: 1.25rem; bottom: 1.5rem; }
+      .hero-number { display: none; }
+      .hero-grid-bg { background-size: 35px 35px; }
+
+      /* SECTIONS */
+      #hero, section, #contact, footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+      section { padding-top: 4rem; padding-bottom: 4rem; }
+      .section-title { font-size: clamp(1.8rem, 8vw, 2.5rem); margin-bottom: 2rem; }
+
+      /* ABOUT */
+      #about .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+      .stat { padding: 1.5rem 1rem; }
+      .stat-num { font-size: 2rem; }
+
+      /* SKILLS */
+      #skills .skills-container { grid-template-columns: 1fr; }
+      .skill-group { padding: 1.5rem; }
+
+      /* PROJECTS */
+      #projects .projects-grid { grid-template-columns: 1fr !important; }
+      .project-card { grid-template-columns: 1fr !important; gap: 1.5rem !important; padding: 1.5rem; }
+
+      /* CONTACT */
+      .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .contact-headline { font-size: clamp(2rem, 10vw, 3rem); }
+      .form-row { grid-template-columns: 1fr; }
+      .form-field label { padding: 0.85rem 1rem 0.3rem; }
+      .form-field input, .form-field textarea { padding: 0.3rem 1rem 0.85rem; font-size: 0.9rem; }
+      .form-submit { padding: 1.1rem 1.5rem; font-size: 0.95rem; }
+
+      /* FOOTER */
+      footer { flex-direction: column; gap: 0.75rem; text-align: center; padding: 1.5rem 1.25rem; }
+
+      /* Skill bars */
+      .skill-bar-wrap { margin-top: 2rem; }
+    }
+
+    /* Extra small phones */
+    @media (max-width: 400px) {
+      .hero-char { font-size: 13vw; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -807,7 +908,18 @@
       <li><a href="#projects">Projects</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
+    <div class="nav-hamburger" id="hamburger" style="display:none;" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
   </nav>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about"    onclick="closeMenu()"><span class="mobile-menu-num">01</span>About</a>
+    <a href="#skills"   onclick="closeMenu()"><span class="mobile-menu-num">02</span>Skills</a>
+    <a href="#projects" onclick="closeMenu()"><span class="mobile-menu-num">03</span>Projects</a>
+    <a href="#contact"  onclick="closeMenu()"><span class="mobile-menu-num">04</span>Contact</a>
+  </div>
 
   <!-- HERO -->
   <section id="hero">
@@ -994,8 +1106,8 @@
         <div class="contact-headline">Let's<br><span>work</span><br>together.</div>
         <p class="contact-sub">Open to new opportunities, freelance projects, or just a good conversation about code.</p>
         <div class="contact-links">
-          <a href="mailto:eshangodambe83@gmail.com" class="contact-link">
-            <span>eshangodambe83@gmail.com</span>
+          <a href="/cdn-cgi/l/email-protection#7613051e1718111912171b14134e4536111b171f1a5815191b" class="contact-link">
+            <span><span class="__cf_email__" data-cfemail="e782948f8689808883868a8582dfd4a7808a868e8bc984888a">[email&#160;protected]</span></span>
             <span>↗</span>
           </a>
           <a href="https://github.com/" target="_blank" class="contact-link">
@@ -1043,7 +1155,7 @@
     <a href="#hero" class="footer-back">Back to top ↑</a>
   </footer>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // — Glitch crosshair cursor —
     const main    = document.getElementById('cursorMain');
     const ghostR  = document.getElementById('ghostR');
@@ -1126,6 +1238,25 @@
       }, 500 + i * 80);
     });
     const nav = document.getElementById('nav');
+
+    // ── MOBILE MENU ───────────────────────────────────────────────────
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    function isMobile() { return window.innerWidth <= 900; }
+    function updateHamburger() { hamburger.style.display = isMobile() ? 'flex' : 'none'; }
+    updateHamburger();
+    window.addEventListener('resize', updateHamburger);
+    function toggleMenu() {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+      document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+    }
+    function closeMenu() {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 50);
     });
@@ -1152,9 +1283,9 @@
     // 4. Go to Account → copy your Public Key
     // 5. Replace the three placeholder strings below with your real IDs
 
-    const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // ← paste here
-    const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // ← paste here
-    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // ← paste here
+    const EMAILJS_PUBLIC_KEY  = 'dkQxPxt_h0W1_OXKd';
+    const EMAILJS_SERVICE_ID  = 'service_nmmjpbb';
+    const EMAILJS_TEMPLATE_ID = 'template_mb4r7df';
 
     emailjs.init(EMAILJS_PUBLIC_KEY);
 
@@ -1397,13 +1528,4 @@
         if (s.x < margin)      { s.x = margin;      s.vx *= -0.5; }
         if (s.x > hw - margin) { s.x = hw - margin; s.vx *= -0.5; }
         if (s.y < margin)      { s.y = margin;       s.vy *= -0.5; }
-        if (s.y > hh - margin) { s.y = hh - margin;  s.vy *= -0.5; }
-
-        s.el.style.transform = `translate(${s.x - s.ox - s.w/2}px, ${s.y - s.oy - s.h/2}px)`;
-      });
-
-      requestAnimationFrame(gravTick);
-    }
-    gravTick();
-  </script>
-</html>
+   
