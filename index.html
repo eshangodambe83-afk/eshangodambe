@@ -720,7 +720,155 @@
     }
     .section-line.visible { width: 80px; }
 
-    /* ANTIGRAVITY ELEMENTS */
+    /* ── ADMIN ADD PROJECT ─────────────────────────────── */
+    .add-project-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 52px; height: 52px;
+      background: var(--accent);
+      color: #0a0a0a;
+      border: none;
+      font-size: 1.6rem;
+      font-weight: 300;
+      cursor: none;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(200,245,66,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .add-project-btn:hover { transform: scale(1.1); box-shadow: 0 0 35px rgba(200,245,66,0.5); }
+
+    /* password & project modal backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+    }
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+    .modal-sub {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      margin-bottom: 2rem;
+    }
+    .modal-field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1px;
+    }
+    .modal-field label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.85rem 1rem 0.3rem;
+      background: #161616;
+    }
+    .modal-field input, .modal-field textarea {
+      background: #161616;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 0.3rem 1rem 0.85rem;
+      resize: none;
+      width: 100%;
+    }
+    .modal-field input:focus, .modal-field textarea:focus { background: #1a1a1a; }
+    .modal-actions { display: flex; gap: 1px; margin-top: 1px; }
+    .modal-btn {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: none;
+      transition: opacity 0.2s;
+    }
+    .modal-btn.primary { background: var(--accent); color: #0a0a0a; }
+    .modal-btn.secondary { background: var(--border); color: var(--muted); }
+    .modal-btn:hover { opacity: 0.85; }
+    .modal-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.2rem;
+      cursor: none;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-error {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #ff5555;
+      margin-top: 0.75rem;
+      display: none;
+    }
+    /* dynamic project card delete btn (admin mode) */
+    .project-card .delete-btn {
+      display: none;
+      position: absolute;
+      top: 1rem; left: 1rem;
+      background: #ff3b3b;
+      color: white;
+      border: none;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.6rem;
+      cursor: none;
+      z-index: 10;
+    }
+    body.admin-mode .project-card .delete-btn { display: block; }
+    body.admin-mode .add-project-btn { background: #ff3b3b; box-shadow: 0 0 20px rgba(255,59,59,0.3); }
+    .admin-badge {
+      position: fixed;
+      top: 5rem; right: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,245,66,0.3);
+      padding: 0.25rem 0.65rem;
+      letter-spacing: 0.1em;
+      z-index: 500;
+      display: none;
+    }
+    body.admin-mode .admin-badge { display: block; }
+
+    @media (max-width: 900px) {
+      .modal-box { margin: 1rem; max-width: 100%; }
+    }
+
+    
     .gravity-item {
       position: absolute;
       pointer-events: none;
@@ -921,6 +1069,64 @@
     <a href="#skills"   onclick="closeMenu()"><span class="mobile-menu-num">02</span>Skills</a>
     <a href="#projects" onclick="closeMenu()"><span class="mobile-menu-num">03</span>Projects</a>
     <a href="#contact"  onclick="closeMenu()"><span class="mobile-menu-num">04</span>Contact</a>
+  </div>
+
+  <!-- Admin badge -->
+  <div class="admin-badge">● ADMIN MODE</div>
+
+  <!-- Add project floating button -->
+  <button class="add-project-btn" id="addProjectBtn" title="Add Project">+</button>
+
+  <!-- Password Modal -->
+  <div class="modal-backdrop" id="passwordModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closePasswordModal()">✕</button>
+      <div class="modal-title">Admin Access</div>
+      <div class="modal-sub">Enter your password to add a project</div>
+      <div class="modal-field">
+        <label>Password</label>
+        <input type="password" id="adminPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()" />
+      </div>
+      <div class="modal-error" id="passwordError">Incorrect password. Try again.</div>
+      <div class="modal-actions" style="margin-top:1rem;">
+        <button class="modal-btn primary" onclick="checkPassword()">Enter</button>
+        <button class="modal-btn secondary" onclick="closePasswordModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Project Modal -->
+  <div class="modal-backdrop" id="addProjectModal">
+    <div class="modal-box" style="max-width:560px;">
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+      <div class="modal-title">New Project</div>
+      <div class="modal-sub">Fill in the details — it'll appear on your portfolio instantly</div>
+      <div class="modal-field">
+        <label>Project Title</label>
+        <input type="text" id="newTitle" placeholder="e.g. My Awesome App" />
+      </div>
+      <div class="modal-field">
+        <label>Live URL</label>
+        <input type="text" id="newUrl" placeholder="https://myapp.netlify.app" />
+      </div>
+      <div class="modal-field">
+        <label>Description</label>
+        <textarea id="newDesc" rows="3" placeholder="What does this project do?"></textarea>
+      </div>
+      <div class="modal-field">
+        <label>Tech Stack (comma separated)</label>
+        <input type="text" id="newTech" placeholder="HTML, CSS, JavaScript, React" />
+      </div>
+      <div class="modal-field">
+        <label>Features (one per line)</label>
+        <textarea id="newFeatures" rows="4" placeholder="User authentication&#10;Real-time updates&#10;Mobile responsive"></textarea>
+      </div>
+      <div class="modal-error" id="addError">Please fill in title, URL and description.</div>
+      <div class="modal-actions">
+        <button class="modal-btn primary" onclick="addProject()">Add to Portfolio</button>
+        <button class="modal-btn secondary" onclick="closeAddModal()">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <!-- HERO -->
@@ -1257,6 +1463,186 @@
     <div class="footer-copy">© 2026 Eshan Godambe. All rights reserved.</div>
     <a href="#hero" class="footer-back">Back to top ↑</a>
   </footer>
+
+  <!-- FLOATING + BUTTON -->
+  <button id="addProjectBtn" onclick="openAdminLogin()" title="Add New Project" style="
+    position:fixed; bottom:2rem; right:2rem; z-index:999;
+    width:52px; height:52px;
+    background:var(--accent); color:#0a0a0a;
+    border:none; border-radius:0;
+    font-size:1.6rem; font-weight:700;
+    cursor:none;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 0 20px rgba(200,245,66,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  " onmouseenter="this.style.transform='scale(1.1)';this.style.boxShadow='0 0 30px rgba(200,245,66,0.5)'"
+     onmouseleave="this.style.transform='scale(1)';this.style.boxShadow='0 0 20px rgba(200,245,66,0.3)'">+</button>
+
+  <!-- PASSWORD MODAL -->
+  <div id="loginModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div style="background:var(--surface); border:1px solid var(--border); padding:2.5rem; width:340px; position:relative;">
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:1.5rem;">Admin Access</div>
+      <div style="font-size:1.4rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:2rem;">Enter Password</div>
+      <input id="adminPass" type="password" placeholder="••••••••" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.9rem;padding:0.85rem 1rem;outline:none;margin-bottom:0.75rem;" onkeydown="if(event.key==='Enter')checkPass()"/>
+      <div id="passError" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff5555;margin-bottom:0.75rem;display:none;">Incorrect password.</div>
+      <div style="display:flex;gap:0.75rem;">
+        <button onclick="checkPass()" style="flex:1;background:var(--accent);color:#0a0a0a;border:none;padding:0.85rem;font-family:var(--font-display);font-weight:700;font-size:0.85rem;cursor:none;">Unlock</button>
+        <button onclick="closeLogin()" style="flex:1;background:transparent;color:var(--muted);border:1px solid var(--border);padding:0.85rem;font-family:var(--font-display);font-size:0.85rem;cursor:none;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD PROJECT MODAL -->
+  <div id="projectModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(8px); overflow-y:auto;">
+    <div style="background:var(--surface); border:1px solid var(--border); padding:2.5rem; width:min(560px,95vw); margin:2rem auto; position:relative;">
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:1.5rem;">New Project</div>
+      <div style="font-size:1.4rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:2rem;">Add to Portfolio</div>
+
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div>
+          <label style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.4rem;">Project Title *</label>
+          <input id="pTitle" type="text" placeholder="My Awesome Project" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.85rem;padding:0.75rem 1rem;outline:none;box-sizing:border-box;"/>
+        </div>
+        <div>
+          <label style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.4rem;">Live URL *</label>
+          <input id="pUrl" type="text" placeholder="https://myproject.netlify.app" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.85rem;padding:0.75rem 1rem;outline:none;box-sizing:border-box;"/>
+        </div>
+        <div>
+          <label style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.4rem;">Description *</label>
+          <textarea id="pDesc" rows="3" placeholder="What does this project do?" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.85rem;padding:0.75rem 1rem;outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+        </div>
+        <div>
+          <label style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.4rem;">Tech Stack (comma separated)</label>
+          <input id="pTech" type="text" placeholder="HTML, CSS, JavaScript, Netlify" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.85rem;padding:0.75rem 1rem;outline:none;box-sizing:border-box;"/>
+        </div>
+        <div>
+          <label style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.4rem;">Features (one per line)</label>
+          <textarea id="pFeatures" rows="4" placeholder="User authentication&#10;Real-time updates&#10;Responsive design" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.85rem;padding:0.75rem 1rem;outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+        </div>
+        <div id="pError" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff5555;display:none;">Please fill in all required fields.</div>
+        <div style="display:flex;gap:0.75rem;margin-top:0.5rem;">
+          <button onclick="saveProject()" style="flex:1;background:var(--accent);color:#0a0a0a;border:none;padding:0.9rem;font-family:var(--font-display);font-weight:700;font-size:0.85rem;cursor:none;">Add Project ↗</button>
+          <button onclick="closeProjectModal()" style="flex:1;background:transparent;color:var(--muted);border:1px solid var(--border);padding:0.9rem;font-family:var(--font-display);font-size:0.85rem;cursor:none;">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── ADMIN PROJECT MANAGER ─────────────────────────────────────────
+    const ADMIN_PASSWORD = 'eshan2026'; // ← change this to your own password!
+
+    function openAdminLogin() {
+      document.getElementById('loginModal').style.display = 'flex';
+      document.getElementById('adminPass').value = '';
+      document.getElementById('passError').style.display = 'none';
+      setTimeout(() => document.getElementById('adminPass').focus(), 100);
+    }
+    function closeLogin() {
+      document.getElementById('loginModal').style.display = 'none';
+    }
+    function checkPass() {
+      if (document.getElementById('adminPass').value === ADMIN_PASSWORD) {
+        closeLogin();
+        openProjectModal();
+      } else {
+        document.getElementById('passError').style.display = 'block';
+        document.getElementById('adminPass').value = '';
+      }
+    }
+
+    function openProjectModal() {
+      document.getElementById('projectModal').style.display = 'flex';
+      document.getElementById('pTitle').value = '';
+      document.getElementById('pUrl').value = '';
+      document.getElementById('pDesc').value = '';
+      document.getElementById('pTech').value = '';
+      document.getElementById('pFeatures').value = '';
+      document.getElementById('pError').style.display = 'none';
+    }
+    function closeProjectModal() {
+      document.getElementById('projectModal').style.display = 'none';
+    }
+
+    function saveProject() {
+      const title    = document.getElementById('pTitle').value.trim();
+      const url      = document.getElementById('pUrl').value.trim();
+      const desc     = document.getElementById('pDesc').value.trim();
+      const techRaw  = document.getElementById('pTech').value.trim();
+      const featRaw  = document.getElementById('pFeatures').value.trim();
+
+      if (!title || !url || !desc) {
+        document.getElementById('pError').style.display = 'block';
+        return;
+      }
+
+      // Load existing extra projects from localStorage
+      const existing = JSON.parse(localStorage.getItem('extraProjects') || '[]');
+      const num = 5 + existing.length; // starts at 05
+      existing.push({ title, url, desc, techRaw, featRaw, num });
+      localStorage.setItem('extraProjects', JSON.stringify(existing));
+
+      renderExtraProjects();
+      closeProjectModal();
+
+      // Flash confirmation
+      const btn = document.getElementById('addProjectBtn');
+      btn.textContent = '✓';
+      btn.style.background = '#3dffa0';
+      setTimeout(() => { btn.textContent = '+'; btn.style.background = 'var(--accent)'; }, 2000);
+    }
+
+    function renderExtraProjects() {
+      const existing = JSON.parse(localStorage.getItem('extraProjects') || '[]');
+      // Remove old dynamic cards
+      document.querySelectorAll('.dynamic-project').forEach(el => el.remove());
+      if (existing.length === 0) return;
+
+      const grid = document.querySelector('.projects-grid');
+
+      existing.forEach(p => {
+        const techChips = p.techRaw ? p.techRaw.split(',').map(t =>
+          `<span class="tech-chip">${t.trim()}</span>`).join('') : '';
+        const featItems = p.featRaw ? p.featRaw.split('\n').filter(f => f.trim()).map(f =>
+          `<li style="font-family:var(--font-mono);font-size:0.78rem;color:#777;display:flex;gap:0.6rem;"><span style="color:var(--accent)">→</span> ${f.trim()}</li>`).join('') : '';
+
+        const card = document.createElement('a');
+        card.href = p.url;
+        card.target = '_blank';
+        card.className = 'project-card dynamic-project';
+        card.style.cssText = 'display:grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start;';
+        card.innerHTML = `
+          <div>
+            <div class="project-arrow">↗</div>
+            <div class="project-num">0${p.num}</div>
+            <div class="project-title" style="font-size:2rem; margin-bottom:1rem;">${p.title}</div>
+            <div class="project-desc" style="font-size:0.85rem;">${p.desc}</div>
+            <div class="project-tech" style="margin-top:1.5rem;">${techChips}</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:1rem; padding-top:0.25rem;">
+            ${featItems ? `<div style="border:1px solid var(--border); padding:1.5rem; background:var(--surface);">
+              <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem;">Features</div>
+              <ul style="list-style:none;display:flex;flex-direction:column;gap:0.5rem;">${featItems}</ul>
+            </div>` : ''}
+            <a href="${p.url}" target="_blank" style="display:flex;align-items:center;justify-content:space-between;background:var(--accent);color:#0a0a0a;padding:1rem 1.25rem;font-family:var(--font-display);font-size:0.82rem;font-weight:700;text-decoration:none;" onclick="event.stopPropagation()">
+              View Live Project <span>↗</span>
+            </a>
+          </div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    // Load saved projects on page load
+    renderExtraProjects();
+
+    // Close modals on backdrop click
+    document.getElementById('loginModal').addEventListener('click', function(e) {
+      if (e.target === this) closeLogin();
+    });
+    document.getElementById('projectModal').addEventListener('click', function(e) {
+      if (e.target === this) closeProjectModal();
+    });
+  </script>
 
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // — Glitch crosshair cursor —
@@ -1641,5 +2027,187 @@
     }
     gravTick();
     }); // end window.load
+  </script>
+  <script>
+    // ── ADMIN PANEL ───────────────────────────────────────────────────
+    const ADMIN_PASSWORD = 'eshan2024'; // ← change this to your own password!
+    let adminMode = false;
+    let projectCount = document.querySelectorAll('.project-card').length;
+
+    const addBtn        = document.getElementById('addProjectBtn');
+    const passwordModal = document.getElementById('passwordModal');
+    const addModal      = document.getElementById('addProjectModal');
+    const projectsGrid  = document.querySelector('.projects-grid');
+
+    // + button click
+    addBtn.addEventListener('click', () => {
+      if (!adminMode) {
+        passwordModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => document.getElementById('adminPassword').focus(), 100);
+      } else {
+        openAddModal();
+      }
+    });
+
+    function checkPassword() {
+      const val = document.getElementById('adminPassword').value;
+      if (val === ADMIN_PASSWORD) {
+        adminMode = true;
+        document.body.classList.add('admin-mode');
+        closePasswordModal();
+        openAddModal();
+      } else {
+        document.getElementById('passwordError').style.display = 'block';
+        document.getElementById('adminPassword').value = '';
+      }
+    }
+
+    function closePasswordModal() {
+      passwordModal.classList.remove('open');
+      document.body.style.overflow = '';
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('passwordError').style.display = 'none';
+    }
+
+    function openAddModal() {
+      addModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => document.getElementById('newTitle').focus(), 100);
+    }
+
+    function closeAddModal() {
+      addModal.classList.remove('open');
+      document.body.style.overflow = '';
+      // clear fields
+      ['newTitle','newUrl','newDesc','newTech','newFeatures'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('addError').style.display = 'none';
+    }
+
+    function addProject() {
+      const title    = document.getElementById('newTitle').value.trim();
+      const url      = document.getElementById('newUrl').value.trim();
+      const desc     = document.getElementById('newDesc').value.trim();
+      const techRaw  = document.getElementById('newTech').value.trim();
+      const featRaw  = document.getElementById('newFeatures').value.trim();
+
+      if (!title || !url || !desc) {
+        document.getElementById('addError').style.display = 'block';
+        return;
+      }
+
+      projectCount++;
+      const num = String(projectCount).padStart(2, '0');
+
+      const techChips = techRaw ? techRaw.split(',').map(t =>
+        `<span class="tech-chip">${t.trim()}</span>`).join('') : '';
+
+      const featureItems = featRaw ? featRaw.split('\n').filter(f => f.trim()).map(f =>
+        `<li style="font-family:var(--font-mono);font-size:0.78rem;color:#777;display:flex;gap:0.6rem;">
+          <span style="color:var(--accent)">→</span> ${f.trim()}
+        </li>`).join('') : '<li style="font-family:var(--font-mono);font-size:0.78rem;color:#777;">Live project</li>';
+
+      const card = document.createElement('a');
+      card.href = url;
+      card.target = '_blank';
+      card.className = 'project-card';
+      card.style.cssText = 'display:grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; position:relative;';
+      card.innerHTML = `
+        <button class="delete-btn" onclick="deleteProject(event, this)">✕ Remove</button>
+        <div>
+          <div class="project-arrow">↗</div>
+          <div class="project-num">${num}</div>
+          <div class="project-title" style="font-size:2rem; margin-bottom:1rem;">${title}</div>
+          <div class="project-desc" style="font-size:0.85rem;">${desc}</div>
+          <div class="project-tech" style="margin-top:1.5rem;">${techChips}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:1rem; padding-top:0.25rem;">
+          <div style="border:1px solid var(--border); padding:1.5rem; background:var(--surface);">
+            <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem;">Features</div>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:0.5rem;">${featureItems}</ul>
+          </div>
+          <a href="${url}" target="_blank" onclick="event.stopPropagation()" style="display:flex;align-items:center;justify-content:space-between;background:var(--accent);color:#0a0a0a;padding:1rem 1.25rem;font-family:var(--font-display);font-size:0.82rem;font-weight:700;text-decoration:none;" onmouseenter="this.style.opacity=0.85" onmouseleave="this.style.opacity=1">
+            View Live Project <span>↗</span>
+          </a>
+        </div>`;
+
+      projectsGrid.appendChild(card);
+
+      // Save to localStorage so it persists on refresh
+      saveProjects();
+      closeAddModal();
+
+      // Scroll to new card
+      setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
+    }
+
+    function deleteProject(e, btn) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm('Remove this project from your portfolio?')) {
+        btn.closest('.project-card').remove();
+        renumberProjects();
+        saveProjects();
+      }
+    }
+
+    function renumberProjects() {
+      document.querySelectorAll('.project-card .project-num').forEach((el, i) => {
+        el.textContent = String(i + 1).padStart(2, '0');
+      });
+      projectCount = document.querySelectorAll('.project-card').length;
+    }
+
+    // ── PERSIST DYNAMIC PROJECTS ──────────────────────────────────────
+    function saveProjects() {
+      const dynamicCards = [...document.querySelectorAll('.project-card[data-dynamic]')];
+      const data = dynamicCards.map(card => ({
+        title:    card.querySelector('.project-title')?.textContent,
+        url:      card.href,
+        desc:     card.querySelector('.project-desc')?.textContent,
+        tech:     [...card.querySelectorAll('.tech-chip')].map(t => t.textContent).join(', '),
+        features: [...card.querySelectorAll('ul li')].map(l => l.textContent.replace('→','').trim()).join('\n'),
+      }));
+      localStorage.setItem('eg_dynamic_projects', JSON.stringify(data));
+    }
+
+    // Mark dynamically added cards
+    const origAdd = addProject;
+    function loadSavedProjects() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('eg_dynamic_projects') || '[]');
+        saved.forEach(p => {
+          document.getElementById('newTitle').value    = p.title;
+          document.getElementById('newUrl').value      = p.url;
+          document.getElementById('newDesc').value     = p.desc;
+          document.getElementById('newTech').value     = p.tech;
+          document.getElementById('newFeatures').value = p.features;
+          addProject();
+          const cards = document.querySelectorAll('.project-card');
+          cards[cards.length - 1].setAttribute('data-dynamic', '1');
+        });
+        closeAddModal();
+      } catch(e) {}
+    }
+
+    // Patch addProject to mark dynamic cards
+    const _addProject = addProject;
+    window.addProject = function() {
+      _addProject();
+      const cards = document.querySelectorAll('.project-card');
+      if (cards.length) cards[cards.length-1].setAttribute('data-dynamic','1');
+    }
+
+    // Load on page start
+    window.addEventListener('load', loadSavedProjects);
+
+    // Close modals on backdrop click
+    passwordModal.addEventListener('click', e => { if(e.target === passwordModal) closePasswordModal(); });
+    addModal.addEventListener('click', e => { if(e.target === addModal) closeAddModal(); });
+
+    // ESC key closes modals
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closePasswordModal(); closeAddModal(); }
+    });
   </script>
 </html>
